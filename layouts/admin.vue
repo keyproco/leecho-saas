@@ -507,9 +507,14 @@ const chart1 = [
     'Import Growth Rate': 2.51,
   },
 ]
+
+
+const isModalOpen = ref(false)
 const openOrganizationForm = () => {
+    isModalOpen.value = !isModalOpen.value
     console.log("clicked")
 }
+
 const chart2 = [
   { name: 'Jan', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
   { name: 'Feb', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
