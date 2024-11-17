@@ -507,7 +507,9 @@ const chart1 = [
     'Import Growth Rate': 2.51,
   },
 ]
-
+const openOrganizationForm = () => {
+    console.log("clicked")
+}
 const chart2 = [
   { name: 'Jan', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
   { name: 'Feb', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
@@ -581,8 +583,8 @@ const chart3 = [
                   <div class="flex size-6 items-center justify-center rounded-md border bg-background">
                     <Plus class="size-4" />
                   </div>
-                  <div class="font-medium text-muted-foreground">
-                    Add team
+                  <div @click="openOrganizationForm()" class="font-medium text-muted-foreground">
+                    Add Organization
                   </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -762,6 +764,7 @@ const chart3 = [
         </div>
       </header>
       <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
 
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
           <div class="aspect-video rounded-xl bg-muted/50"> 
@@ -792,8 +795,6 @@ const chart3 = [
             <AreaChart :data="chart3" index="name" :categories="['total', 'predicted']" />
           </div>
         </div>
-
-        <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
             <NuxtPage></NuxtPage>
         </div>
       </div>
