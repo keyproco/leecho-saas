@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import {
+    EllipsisVertical
+} from 'lucide-vue-next'
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -11,14 +14,15 @@ import {
 
 <template>
   <DropdownMenu>
-    <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+    <DropdownMenuTrigger><EllipsisVertical/></DropdownMenuTrigger>
     <DropdownMenuContent>
-      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+      <DropdownMenuLabel>Actions</DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <DropdownMenuItem>Profile</DropdownMenuItem>
-      <DropdownMenuItem>Billing</DropdownMenuItem>
+      <DropdownMenuItem>Edit</DropdownMenuItem>
+      <DropdownMenuItem>Create variante</DropdownMenuItem>
       <DropdownMenuItem>Team</DropdownMenuItem>
-      <DropdownMenuItem>Subscription</DropdownMenuItem>
+      <Separator></Separator>
+      <DropdownMenuItem>Delete</DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>

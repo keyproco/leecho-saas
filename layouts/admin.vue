@@ -865,10 +865,10 @@ const onSubmit = form.handleSubmit((values) => {
           </div>
         </header>
         <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
             <div class="grid auto-rows-min gap-4 md:grid-cols-3">
               <div class="aspect-video rounded-xl bg-muted/50">
                 <LineChart
+                 class="w-full h-full p-7"
                   :data="chart1"
                   index="year"
                   :categories="['Export Growth Rate', 'Import Growth Rate']"
@@ -881,6 +881,7 @@ const onSubmit = form.handleSubmit((values) => {
               </div>
               <div class="aspect-video rounded-xl bg-muted/50">
                 <BarChart
+                  class="w-full h-full p-7"
                   :data="chart2"
                   index="name"
                   :categories="['total', 'predicted']"
@@ -891,10 +892,11 @@ const onSubmit = form.handleSubmit((values) => {
                   }"
                 />
               </div>
-              <div class="rounded-xl bg-muted/50">
-                <AreaChart :data="chart3" index="name" :categories="['total', 'predicted']" />
+              <div class="aspect-video rounded-xl bg-muted/50">
+                <AreaChart class="w-full h-full p-7" :data="chart3" index="name" :categories="['total', 'predicted']" />
               </div>
             </div>
+          <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
             <NuxtPage></NuxtPage>
           </div>
         </div>
