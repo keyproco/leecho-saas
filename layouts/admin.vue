@@ -5,6 +5,21 @@ import {
   AvatarImage,
 } from '@/components/ui/avatar'
 
+
+import {
+  cn
+} from "@/lib/utils"
+import * as z from "zod"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -242,6 +257,7 @@ const crumbs = computed(() => {
 
   return crumbs
 })
+import { Label } from '@/components/ui/label'
 
 import { LineChart } from '@/components/ui/chart-line'
 
@@ -508,12 +524,16 @@ const chart1 = [
   },
 ]
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
-const isModalOpen = ref(false)
-const openOrganizationForm = () => {
-    isModalOpen.value = !isModalOpen.value
-    console.log("clicked")
-}
 
 const chart2 = [
   { name: 'Jan', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
@@ -536,175 +556,235 @@ const chart3 = [
   { name: 'Jul', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
 ]
 
+import { toTypedSchema } from '@vee-validate/zod'
+import { useForm } from 'vee-validate'
+
+const formData = reactive({
+  orgaName: '',
+  orgaDescription: ''
+});
+
+const formSchema = toTypedSchema(z.object({
+    orgaName: z.string().min(3).max(30),
+    orgaDescription: z.string().min(1).max(20).optional()
+}))
+
+
+const { handleSubmit } = useForm({
+  validationSchema: formSchema,
+})
+
+const form = useForm({
+  validationSchema: formSchema,
+})
+
+const onSubmit = form.handleSubmit((values) => {
+  console.log('Form submitted!', values)
+})
+
 </script>
 
 <template>
-  
-  <SidebarProvider>
-
-    <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <SidebarMenuButton
-                  size="lg"
-                  class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
-                  <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <component :is="activeTeam.logo" class="size-4" />
-                  </div>
-                  <div class="grid flex-1 text-left text-sm leading-tight">
-                    <span class="truncate font-semibold">{{ activeTeam.name }}</span>
-                    <span class="truncate text-xs">{{ activeTeam.plan }}</span>
-                  </div>
-                  <ChevronsUpDown class="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                align="start"
-                side="bottom"
-                :side-offset="4"
-              >
-                <DropdownMenuLabel class="text-xs text-muted-foreground">
-                  Organizations
-                </DropdownMenuLabel>
-                <DropdownMenuItem
-                  v-for="(team, index) in data.teams"
-                  :key="team.name"
-                  class="gap-2 p-2"
-                  @click="setActiveTeam(team)"
-                >
-                  <div class="flex size-6 items-center justify-center rounded-sm border">
-                    <component :is="team.logo" class="size-4 shrink-0" />
-                  </div>
-                  {{ team.name }}
-                  <DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem class="gap-2 p-2">
-                  <div class="flex size-6 items-center justify-center rounded-md border bg-background">
-                    <Plus class="size-4" />
-                  </div>
-                  <div @click="openOrganizationForm()" class="font-medium text-muted-foreground">
-                    Add Organization
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Platform</SidebarGroupLabel>
+    <SidebarProvider>
+      <Sidebar collapsible="icon">
+        <SidebarHeader>
           <SidebarMenu>
-            <Collapsible
-              v-for="item in data.navMain"
-              :key="item.title"
-              as-child
-              :default-open="item.isActive"
-              class="group/collapsible"
-            >
-              <SidebarMenuItem>
-                <CollapsibleTrigger as-child>
-                  <SidebarMenuButton :tooltip="item.title">
-                    <component :is="item.icon" />
-                    <span>{{ item.title }}</span>
-                    <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    <SidebarMenuSubItem
-                      v-for="subItem in item.items"
-                      :key="subItem.title"
-                    >
-                      <SidebarMenuSubButton as-child>
-                        <a :href="subItem.url">
-                          <span>{{ subItem.title }}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </SidebarMenuItem>
-            </Collapsible>
-          </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup class="group-data-[collapsible=icon]:hidden">
-          <SidebarGroupLabel>Projects</SidebarGroupLabel>
-          <SidebarMenu>
-            <SidebarMenuItem
-              v-for="item in data.projects"
-              :key="item.name"
-            >
-              <SidebarMenuButton as-child>
-                <a :href="item.url">
-                  <component :is="item.icon" />
-                  <span>{{ item.name }}</span>
-                </a>
-              </SidebarMenuButton>
+            <SidebarMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                  <SidebarMenuAction show-on-hover>
-                    <MoreHorizontal />
-                    <span class="sr-only">More</span>
-                  </SidebarMenuAction>
+                  <SidebarMenuButton
+                    size="lg"
+                    class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  >
+                    <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                      <component :is="activeTeam.logo" class="size-4" />
+                    </div>
+                    <div class="grid flex-1 text-left text-sm leading-tight">
+                      <span class="truncate font-semibold">{{ activeTeam.name }}</span>
+                      <span class="truncate text-xs">{{ activeTeam.plan }}</span>
+                    </div>
+                    <ChevronsUpDown class="ml-auto" />
+                  </SidebarMenuButton>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent class="w-48 rounded-lg" side="bottom" align="end">
-                  <DropdownMenuItem>
-                    <Folder class="text-muted-foreground" />
-                    <span>View Project</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Forward class="text-muted-foreground" />
-                    <span>Share Project</span>
+                <DropdownMenuContent
+                  class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                  align="start"
+                  side="bottom"
+                  :side-offset="4"
+                >
+                  <DropdownMenuLabel class="text-xs text-muted-foreground">
+                    Organizations
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem
+                    v-for="(team, index) in data.teams"
+                    :key="team.name"
+                    class="gap-2 p-2"
+                    @click="setActiveTeam(team)"
+                  >
+                    <div class="flex size-6 items-center justify-center rounded-sm border">
+                      <component :is="team.logo" class="size-4 shrink-0" />
+                    </div>
+                    {{ team.name }}
+                    <DropdownMenuShortcut>⌘{{ index + 1 }}</DropdownMenuShortcut>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Trash2 class="text-muted-foreground" />
-                    <span>Delete Project</span>
+                  <DropdownMenuItem class="gap-2 p-2">
+                    <div class="flex size-6 items-center justify-center rounded-md border bg-background">
+                      <Plus class="size-4" />
+                    </div>
+                    <div class="font-medium text-muted-foreground">
+                      <Dialog>
+                        <DialogTrigger @click.stop>
+                          <div>
+                            Add Organization
+                          </div>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Organization Setup</DialogTitle>
+                            <DialogDescription>
+                              Provide details about your organization.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <form @submit="onSubmit" class="space-y-5 w-full mx-auto py-10">
+                              <FormField
+                                name="orgaName"
+                                v-slot="{ field }"
+                              >
+                                <FormItem>
+                                  <FormLabel>Organization</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Akme"
+                                      type="text"
+                                      v-bind="field"
+                                    />
+                                  </FormControl>
+                                  <FormDescription>Describe your organization</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              </FormField>
+
+                              <FormField
+                                name="orgaDescription"
+                                v-slot="{ field }"
+                              >
+                                <FormItem>
+                                  <FormLabel>Description</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Akme"
+                                      type="text"
+                                      v-bind="field"
+                                    />
+                                  </FormControl>
+                                  <FormDescription>Describe your Organization</FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              </FormField>
+                              <Button type="submit">Submit</Button>
+                            </form>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton class="text-sidebar-foreground/70">
-                <MoreHorizontal class="text-sidebar-foreground/70" />
-                <span>More</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
           </SidebarMenu>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <SidebarMenuButton
-                  size="lg"
-                  class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
-                  <Avatar class="h-8 w-8 rounded-lg">
-                    <AvatarImage :src="data.user.avatar" :alt="data.user.name" />
-                    <AvatarFallback class="rounded-lg">
-                      CN
-                    </AvatarFallback>
-                  </Avatar>
-                  <div class="grid flex-1 text-left text-sm leading-tight">
-                    <span class="truncate font-semibold">{{ data.user.name }}</span>
-                    <span class="truncate text-xs">{{ data.user.email }}</span>
-                  </div>
-                  <ChevronsUpDown class="ml-auto size-4" />
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarMenu>
+              <Collapsible
+                v-for="item in data.navMain"
+                :key="item.title"
+                as-child
+                :default-open="item.isActive"
+                class="group/collapsible"
+              >
+                <SidebarMenuItem>
+                  <CollapsibleTrigger as-child>
+                    <SidebarMenuButton :tooltip="item.title">
+                      <component :is="item.icon" />
+                      <span>{{ item.title }}</span>
+                      <ChevronRight class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      <SidebarMenuSubItem
+                        v-for="subItem in item.items"
+                        :key="subItem.title"
+                      >
+                        <SidebarMenuSubButton as-child>
+                          <a :href="subItem.url">
+                            <span>{{ subItem.title }}</span>
+                          </a>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            </SidebarMenu>
+          </SidebarGroup>
+          <SidebarGroup class="group-data-[collapsible=icon]:hidden">
+            <SidebarGroupLabel>Projects</SidebarGroupLabel>
+            <SidebarMenu>
+              <SidebarMenuItem
+                v-for="item in data.projects"
+                :key="item.name"
+              >
+                <SidebarMenuButton as-child>
+                  <a :href="item.url">
+                    <component :is="item.icon" />
+                    <span>{{ item.name }}</span>
+                  </a>
                 </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg" side="bottom" align="end" :side-offset="4">
-                <DropdownMenuLabel class="p-0 font-normal">
-                  <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <DropdownMenu>
+                  <DropdownMenuTrigger as-child>
+                    <SidebarMenuAction show-on-hover>
+                      <MoreHorizontal />
+                      <span class="sr-only">More</span>
+                    </SidebarMenuAction>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent class="w-48 rounded-lg" side="bottom" align="end">
+                    <DropdownMenuItem>
+                      <Folder class="text-muted-foreground" />
+                      <span>View Project</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Forward class="text-muted-foreground" />
+                      <span>Share Project</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Trash2 class="text-muted-foreground" />
+                      <span>Delete Project</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton class="text-sidebar-foreground/70">
+                  <MoreHorizontal class="text-sidebar-foreground/70" />
+                  <span>More</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <SidebarMenuButton
+                    size="lg"
+                    class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                  >
                     <Avatar class="h-8 w-8 rounded-lg">
                       <AvatarImage :src="data.user.avatar" :alt="data.user.name" />
                       <AvatarFallback class="rounded-lg">
@@ -715,94 +795,110 @@ const chart3 = [
                       <span class="truncate font-semibold">{{ data.user.name }}</span>
                       <span class="truncate text-xs">{{ data.user.email }}</span>
                     </div>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
+                    <ChevronsUpDown class="ml-auto size-4" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg" side="bottom" align="end" :side-offset="4">
+                  <DropdownMenuLabel class="p-0 font-normal">
+                    <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                      <Avatar class="h-8 w-8 rounded-lg">
+                        <AvatarImage :src="data.user.avatar" :alt="data.user.name" />
+                        <AvatarFallback class="rounded-lg">
+                          CN
+                        </AvatarFallback>
+                      </Avatar>
+                      <div class="grid flex-1 text-left text-sm leading-tight">
+                        <span class="truncate font-semibold">{{ data.user.name }}</span>
+                        <span class="truncate text-xs">{{ data.user.email }}</span>
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      <Sparkles />
+                      Upgrade to Pro
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      <BadgeCheck />
+                      Account
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <CreditCard />
+                      Billing
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Bell />
+                      Notifications
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <Sparkles />
-                    Upgrade to Pro
+                    <LogOut />
+                    Log out
                   </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <BadgeCheck />
-                    Account
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <CreditCard />
-                    Billing
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Bell />
-                    Notifications
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LogOut />
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
-    <SidebarInset>
-      <header class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-        <div class="flex items-center gap-2 px-4">
-          <SidebarTrigger class="-ml-1" />
-          <Separator orientation="vertical" class="mr-2 h-4" />
-          <client-only>
-            <Breadcrumb>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+      <SidebarInset>
+        <header class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div class="flex items-center gap-2 px-4">
+            <SidebarTrigger class="-ml-1" />
+            <Separator orientation="vertical" class="mr-2 h-4" />
+            <client-only>
+              <Breadcrumb>
                 <BreadcrumbList>
-                    <BreadcrumbItem v-for="(crumb, index) in crumbs" :key="index">
-                        <BreadcrumbLink  class="capitalize" @click="navigateTo(crumb.href)">{{ crumb.label }}</BreadcrumbLink>
+                  <BreadcrumbItem v-for="(crumb, index) in crumbs" :key="index">
+                    <BreadcrumbLink class="capitalize" @click="navigateTo(crumb.href)"> {{ crumb.label }}</BreadcrumbLink>
                     <BreadcrumbSeparator v-if="index < crumbs.length - 1" />
-                    </BreadcrumbItem>
+                  </BreadcrumbItem>
                 </BreadcrumbList>
-            </Breadcrumb>
-           </client-only>
-        </div>
-      </header>
-      <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" >
-
-        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div class="aspect-video rounded-xl bg-muted/50"> 
-            <LineChart
-                :data="chart1"
-                index="year"
-                :categories="['Export Growth Rate', 'Import Growth Rate']"
-                :y-formatter="(tick, i) => {
-                return typeof tick === 'number'
-                    ? `$ ${new Intl.NumberFormat('us').format(tick).toString()}`
-                    : ''
-                }"
-            />
+              </Breadcrumb>
+            </client-only>
           </div>
-          <div class="aspect-video rounded-xl bg-muted/50"  > 
-            <BarChart
-                :data="chart2"
-                index="name"
-                :categories="['total', 'predicted']"
-                :y-formatter="(tick, i) => {
-                return typeof tick === 'number'
-                    ? `$ ${new Intl.NumberFormat('us').format(tick).toString()}`
-                    : ''
-                }"
-            />
-          </div>
-          <div class="rounded-xl bg-muted/50">
-            <AreaChart :data="chart3" index="name" :categories="['total', 'predicted']" />
-          </div>
-        </div>
+        </header>
+        <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
+            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+              <div class="aspect-video rounded-xl bg-muted/50">
+                <LineChart
+                  :data="chart1"
+                  index="year"
+                  :categories="['Export Growth Rate', 'Import Growth Rate']"
+                  :y-formatter="(tick, i) => {
+                    return typeof tick === 'number'
+                      ? `$ ${new Intl.NumberFormat('us').format(tick).toString()}`
+                      : ''
+                  }"
+                />
+              </div>
+              <div class="aspect-video rounded-xl bg-muted/50">
+                <BarChart
+                  :data="chart2"
+                  index="name"
+                  :categories="['total', 'predicted']"
+                  :y-formatter="(tick, i) => {
+                    return typeof tick === 'number'
+                      ? `$ ${new Intl.NumberFormat('us').format(tick).toString()}`
+                      : ''
+                  }"
+                />
+              </div>
+              <div class="rounded-xl bg-muted/50">
+                <AreaChart :data="chart3" index="name" :categories="['total', 'predicted']" />
+              </div>
+            </div>
             <NuxtPage></NuxtPage>
+          </div>
         </div>
-      </div>
-    </SidebarInset>
-  </SidebarProvider>
-</template>
+      </SidebarInset>
+    </SidebarProvider>
+  </template>
+  
