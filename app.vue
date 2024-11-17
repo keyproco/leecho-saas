@@ -1,8 +1,7 @@
 <!-- App.vue -->
 <template>
 <NuxtLayout name="admin">
-  <NuxtPage>
-  </NuxtPage>
+  <NuxtPage />
 </NuxtLayout>
 
 </template>

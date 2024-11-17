@@ -35,7 +35,7 @@ import {
   useVueTable,
 } from '@tanstack/vue-table'
 import { ArrowUpDown, ChevronDown } from 'lucide-vue-next'
-import { h, ref, shallowRef } from 'vue'
+import { h, ref, shallowRef} from 'vue'
 import DropdownAction from './dropdown.vue'
 
 export interface Payment {
@@ -44,40 +44,16 @@ export interface Payment {
   status: 'pending' | 'processing' | 'success' | 'failed'
   email: string
 }
+const data = defineProps<{
+  data: Payment[]
+  columns: Array
+}>()
+// const data = shallowRef()
+import { onMounted } from 'vue';
 
-const data = shallowRef<Payment[]>([
-  {
-    id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
-  },
-  {
-    id: '3u1reuv4',
-    amount: 242,
-    status: 'success',
-    email: 'Abe45@gmail.com',
-  },
-  {
-    id: 'derv1ws0',
-    amount: 837,
-    status: 'processing',
-    email: 'Monserrat44@gmail.com',
-  },
-  {
-    id: '5kma53ae',
-    amount: 874,
-    status: 'success',
-    email: 'Silas22@gmail.com',
-  },
-  {
-    id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
-  },
-])
-
+onMounted(() => {
+  console.log('Payments data:', data);
+});
 const columns: ColumnDef<Payment>[] = [
   {
     id: 'select',
@@ -93,6 +69,11 @@ const columns: ColumnDef<Payment>[] = [
     }),
     enableSorting: false,
     enableHiding: false,
+  },
+  {
+    accessorKey: 'id',
+    header: 'ID',
+    cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('id')),
   },
   {
     accessorKey: 'status',
@@ -145,7 +126,7 @@ const rowSelection = ref({})
 const expanded = ref<ExpandedState>({})
 
 const table = useVueTable({
-  data,
+  data: data.data,
   columns,
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
@@ -166,13 +147,16 @@ const table = useVueTable({
   },
 })
 
+
 const statuses: Payment['status'][] = ['pending', 'processing', 'success', 'failed']
 function randomize() {
-  data.value = data.value.map(item => ({
+    console.log("hey", data.data)
+  data.data = data.data.map(item => ({
     ...item,
     status: statuses[Math.floor(Math.random() * statuses.length)],
   }))
 }
+
 </script>
 
 <template>
@@ -184,9 +168,6 @@ function randomize() {
         :model-value="table.getColumn('email')?.getFilterValue() as string"
         @update:model-value=" table.getColumn('email')?.setFilterValue($event)"
       />
-      <Button @click="randomize">
-        Randomize
-      </Button>
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <Button variant="outline" class="ml-auto">

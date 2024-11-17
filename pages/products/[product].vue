@@ -1,5 +1,5 @@
 <template>
     <h1>
-     Page des produits
+       <NuxtPage></NuxtPage>>
     </h1>
 </template>
