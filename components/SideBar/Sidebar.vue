@@ -88,6 +88,8 @@ import {
   Sparkles,
   SquareTerminal,
   Trash2,
+  Sun,
+  Moon
 } from 'lucide-vue-next'
 import { ref } from 'vue'
 
@@ -582,7 +584,12 @@ const form = useForm({
 const onSubmit = form.handleSubmit((values) => {
   console.log('Form submitted!', values)
 })
+const colorMode = useColorMode()
 
+const isDark = ref(false);
+
+
+import { Switch } from '@/components/ui/switch'
 </script>
 <template>
     <SidebarProvider>
@@ -848,7 +855,7 @@ const onSubmit = form.handleSubmit((values) => {
         <SidebarRail />
       </Sidebar>
       <SidebarInset>
-        <header class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <header class="flex h-16 shrink-0 items-center gap-2 justify-between transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div class="flex items-center gap-2 px-4">
             <SidebarTrigger class="-ml-1" />
             <Separator orientation="vertical" class="mr-2 h-4" />
@@ -856,13 +863,31 @@ const onSubmit = form.handleSubmit((values) => {
               <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem v-for="(crumb, index) in crumbs" :key="index">
-                    <BreadcrumbLink class="capitalize" @click="navigateTo(crumb.href)"> {{ crumb.label }}</BreadcrumbLink>
+                    <BreadcrumbLink class="capitalize" @click="navigateTo(crumb.href)">
+                      {{ crumb.label }}
+                    </BreadcrumbLink>
                     <BreadcrumbSeparator v-if="index < crumbs.length - 1" />
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
             </client-only>
           </div>
+          <div>
+            <client-only>
+              <Navbar/>
+            </client-only>
+          </div>
+          <DropdownMenu>
+            <Switch 
+              :checked="isDark" 
+              @update:checked="isDark = !isDark; colorMode.preference = isDark ? 'dark' : 'light'" 
+              class="mx-4">
+                <template #thumb>
+                  <Moon v-if="isDark" :size="18"/>
+                  <Sun v-else :size="18"/>
+                </template>
+            </Switch>
+          </DropdownMenu>
         </header>
         <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div class="grid auto-rows-min gap-4 md:grid-cols-3">
@@ -896,7 +921,7 @@ const onSubmit = form.handleSubmit((values) => {
                 <AreaChart class="w-full h-full p-7" :data="chart3" index="name" :categories="['total', 'predicted']" />
               </div>
             </div>
-          <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
+          <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 flex-col">
             <NuxtPage></NuxtPage>
           </div>
         </div>
