@@ -584,9 +584,10 @@ const form = useForm({
 const onSubmit = form.handleSubmit((values) => {
   console.log('Form submitted!', values)
 })
+
 const colorMode = useColorMode()
 
-const isDark = ref(false);
+const isDark = ref(true);
 
 
 import { Switch } from '@/components/ui/switch'
