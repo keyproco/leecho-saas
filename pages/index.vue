@@ -43,9 +43,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  
-  <div class="container py-10 mx-auto">
-    <DataTable :columns="columns" :data="data" />
+  <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
+    <div class="grid auto-rows-min gap-4 md:grid-cols-2">
+      <DataTable :columns="columns" :data="data" />
+    </div>
   </div>
-
 </template>
